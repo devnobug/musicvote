@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>MusicVote</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- 代码部分begin -->
+<div id="Demo" style="text-align:center;">
+  <div id="VoteMain">
+	
+  </div>
+</div>
+<script type="text/html" id="musicTpl">
+	{{each $data music}}
+	<div class="VoteItem">
+		<img title="支持一下" data-id="{{music._id}}" src="images/LeeSin.png" class="VoteImg">
+		<div class="VoteValue" style="margin-top: {{300-20-music.vote*3}}px; height: {{music.vote*3}}px;">
+			<div class="VoteSpan"><span id="voteNew">{{music.vote}}</span></div>
+		</div>
+		<p class="VoteText">{{music.name}}</p>
+	</div>
+	{{/each}}
+</script>
+<script src="js/jquery.min.js"></script>
+<script src="js/art-template/template-web.js"></script>
+<script src="js/vote.js"></script>
+<!-- 代码部分 end -->
+<!-- <span id="voteNew">{{music.vote}}</span><span class="VoteSpanTri"></span> -->
+</html>

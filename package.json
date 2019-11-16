@@ -1,0 +1,18 @@
+{
+  "name": "musicvote",
+  "version": "1.0.0",
+  "description": "for music vote",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "chenxq",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "getmac": "^1.4.6",
+    "mongoose": "^5.7.8"
+  }
+}
