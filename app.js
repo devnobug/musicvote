@@ -5,20 +5,26 @@ const mongoose = require('mongoose');
 // 引入路径处理模块
 const path = require('path');
 // 引入session模块
-var session = require('express-session');
+// const session = require('express-session');
+// 引入body-parser
+const bodyParser = require('body-parser');
 
 // web服务器
 const app = express();
+
+// 配置bodyparser
+app.use(bodyParser.urlencoded({extended:false}));
 // 设置获取ip地址的配置
 app.set('trust proxy', true);
+
 // 开放静态资源
 app.use(express.static(path.join(__dirname, 'public')));
 // session配置
-app.use(session({
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: false
-}));
+// app.use(session({
+//   secret: 'keyboard cat',
+//   resave: false,
+//   saveUninitialized: false
+// }));
 
 // 数据库连接
 mongoose.set('useFindAndModify', false);

@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <title>MusicVote</title>
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/barrager.css">
 </head>
 <body>
 
@@ -13,8 +14,143 @@
 	
   </div>
 </div>
+<!-- 显示歌单的详细信息 -->
+<div class="show">
+	<p>歌名：<span id="name"></span></p>
+   	<p>歌手：<span id="singer"></span></p>
+   	<p>IP：<span id="ip"></span></p>
+	<p>祝福：</p>
+	<div id="wishlist">
+		<ul>
+		</ul>
+	</div>
+	<div id="writewish">
+		<form id="wishForm">
+			<input type="hidden" name="music_id" id="music_id" value="">
+			<textarea name="content" id="wish"  placeholder="您有一次送祝福的机会"></textarea>
+			<input type="button" id="sendwish" data-img="" value="送祝福">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="button" value="关闭" id="close">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="button" value="已播放" id="played">
+		</form>
+	</div>
+</div>
+<div id="danmu"></div>
+<script type="text/html" id="musicTpl">
+	{{each $data music}}
+	<div class="VoteItem">
+		<img title="支持一下" data-id="{{music._id}}" src="{{music.avatar ? music.avatar : 'images/mary.png'}}" class="VoteImg">
+		<div class="VoteValue" style="margin-top: {{music.vote > 281 ? 0: (281-music.vote)}}px; height: {{music.vote > 281 ? 281: music.vote}}px;">
+			<div class="VoteSpan"><span id="voteNew">{{music.vote}}</span></div>
+		</div>
+		<p class="VoteText" data-id="{{music._id}}">{{music.name.substring(0, 6)}}</p>
+	</div>
+	{{/each}}
+</script>
 <script src="js/jquery.min.js"></script>
+<script src="js/jquery.barrager.js"></script>
+<script src="js/art-template/template-web.js"></script>
 <script src="js/vote.js"></script>
 <!-- 代码部分 end -->
+<script>
+	// 实现弹幕功能 http://www.jq22.com/jquery-info7470
+	
+	$('#sendwish').on('click', () => {	
+		if($('#wish').val().trim().length == 0){
+			alert('就一次上墙机会，难道不写点儿啥？');
+			return false;
+		}
+		$.ajax({
+			url:'/music/wish',
+			data:$('#wishForm').serialize(),
+			type:'post',
+			success:(response) => {
+				// 返回结果中，把当前用户的ip地址给返回
+				var item={
+					img:$('#sendwish').attr('data-img'), //图片 
+					info: $('#name').html() + '@' + response.ip + '❤' +  $('#wish').val(), //文字 
+					href:'http://localhost', //链接 
+					close:true, //显示关闭按钮 
+					speed:10, //延迟,单位秒,默认6 
+					// bottom:70, //距离底部高度,单位px,默认随机 
+					color:'red', //颜色,默认白色 
+					old_ie_color:'#000000', //ie低版兼容色,不能与网页背景相同,默认黑色 
+				}
+				$('body').barrager(item);
+			},
+			error:function(){
+				alert('已经留过言了');
+			}
+		});
+		$('#wish').val('');
+		$('.show').hide();
+	});
+	// 记录用户第一次访问的时间
+	let nowtime = new Date;
+	// 根据当前时间获取最新的祝福
+	setInterval(() => {
+		var newBarragerTimer = '';
+		nowtime = nowtime.toISOString();
+		$.get('/music/wishtime/'+ nowtime, function(data){
+			if (data.length != 0){
+				$.each(data, function(index, value){
+					newBarragerTimer = setTimeout(function(){
+						$('body').barrager({
+							img: value.music && value.music.avatar, //图片 
+							info: (value.music && value.music.name) + '@' + value.ip + '❤' +  value.content, //文字 
+							href:'http://localhost', //链接 
+							close:true, //显示关闭按钮 
+							speed:10, //延迟,单位秒,默认6 
+							// bottom:70, //距离底部高度,单位px,默认随机 
+							color:'red', //颜色,默认白色 
+							old_ie_color:'#000000', //ie低版兼容色,不能与网页背景相同,默认黑色 
+						});
+						clearTimeout(newBarragerTimer);
+					}, index * 1000);				
+				});
+			}
+			nowtime = new Date;
+		});
+	}, 3000);
+	// 每隔30秒重新请求10条评论
+	var timer = setInterval(randwish, 0);
 
+	function randwish(){
+		$.get('/music/roundwish', function(data){
+			//每条弹幕发送间隔
+			var looper_time=3*1000;
+			var items=data;
+			//弹幕总数
+			var total=data.length;
+			//是否首次执行
+			var run_once=true;
+			//弹幕索引
+			var index=0;
+			//先执行一次
+			barrager();
+			function  barrager(){
+				if(run_once){
+					//如果是首次执行,则设置一个定时器,并且把首次执行置为false
+					looper=setInterval(barrager,looper_time);                
+					run_once=false;
+				}
+				//发布一个弹幕
+				if(items[index]){
+					$('body').barrager(items[index]);
+				}
+				//索引自增
+				index++;
+				//所有弹幕发布完毕，清除计时器。
+				if(index == total){
+					clearInterval(looper);
+					// 当前10条结束之后再次请求十条
+					timer = setInterval(randwish, 0);
+					return false;
+				} 
+			}
+		});
+		clearInterval(timer);
+	}
+	
+</script>
+</body>
 </html>

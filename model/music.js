@@ -28,8 +28,13 @@ const musicSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now
     },
+    // 每个ip每天只能点一首歌
+    ip:{
+        type:String,
+        default:'127.0.0.1'
+    },
     // 是否播放，默认false未播放，true为已播放
-    isplay:{
+    isplayed:{
         type:Boolean,
         default:false
     }

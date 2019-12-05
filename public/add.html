@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h2>添加歌曲</h2>
+    <form id="form" action="/music/add" method="post" enctype="multipart/form-data">
+    <div>
+        <p>
+            <label for="">歌名：</label><input type="text" name="name" id="name">
+        </p>
+        <p>
+            <label for="">歌手：</label><input type="text" name="singer" id="singer">
+        </p>
+        <p>
+            <label for="">封面：</label><input type="file" name="avatar">
+        </p>
+        <p>
+            <input type="submit" value="添加歌曲">
+        </p>
+    </div>
+    </form>
+    <script src="js/jquery.min.js"></script>
+    <script>
+        $('#form').on('submit', function(){
+            if($('#name').val().trim().length == 0){
+                alert('请输入歌曲名字');
+                return false;
+            }
+            if($('#singer').val().trim().length == 0){
+                alert('请输入歌手名字');
+                return false;
+            }
+            // $.ajax({
+            //     url:'/music/add'
+            // });
+        });
+    </script>
+</body>
+</html>
