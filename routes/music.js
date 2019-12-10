@@ -188,7 +188,10 @@ music.get('/roundwish', async (req, res) => {
 
 // 根据时间获取最新的祝福
 music.get('/wishtime/:time', async (req, res) => {
-    let wishList = await Wish.find({addtime:{$gte: req.params.time}}).populate('music');
+    // 把当前ip本身的评论去除
+    var index = req.ip.lastIndexOf(':');
+    var ip = req.ip.substr(index+1) != '1' ? req.ip.substr(index+1) : '127.0.0.1'
+    let wishList = await Wish.find({addtime:{$gte: req.params.time}, ip:{$ne:ip}}).populate('music');
     res.send(wishList);
 });
 

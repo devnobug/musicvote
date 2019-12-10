@@ -76,12 +76,12 @@
 					old_ie_color:'#000000', //ie低版兼容色,不能与网页背景相同,默认黑色 
 				}
 				$('body').barrager(item);
+				$('#wish').val('');
 			},
 			error:function(){
 				alert('已经留过言了');
 			}
 		});
-		$('#wish').val('');
 		$('.show').hide();
 	});
 	// 记录用户第一次访问的时间
@@ -108,14 +108,11 @@
 					}, index * 1000);				
 				});
 			}
-			nowtime = new Date;
 		});
-	}, 3000);
+		nowtime = new Date;
+	}, 5000);
 	// 每隔30秒重新请求10条评论
-	var timer = setInterval(randwish, 0);
-
-	function randwish(){
-		$.get('/music/roundwish', function(data){
+	$.get('/music/roundwish', function(data){
 			//每条弹幕发送间隔
 			var looper_time=3*1000;
 			var items=data;
@@ -142,14 +139,11 @@
 				//所有弹幕发布完毕，清除计时器。
 				if(index == total){
 					clearInterval(looper);
-					// 当前10条结束之后再次请求十条
-					timer = setInterval(randwish, 0);
 					return false;
 				} 
 			}
 		});
-		clearInterval(timer);
-	}
+
 	
 </script>
 </body>
